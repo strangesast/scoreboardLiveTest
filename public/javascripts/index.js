@@ -8,7 +8,7 @@ $(document).ready(function() {
 	var obj = {};
 	obj.method = "get";
 	obj.what = "all";
-	
+
 	// get scoreboards
 	source = $('#scoreboardTemplate').html();
   template = Handlebars.compile(source);

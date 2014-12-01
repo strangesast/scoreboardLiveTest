@@ -37,7 +37,7 @@ block content
               button.btn.btn-primary(onclick="addScoreboard();return false;") Submit
 
     script()#scoreboardTemplate.
-      <div id="{{_id}}" class="panel panel-info"><div class="panel-heading"><a href="/{{_id}}">{{name}}</a><a class="pull-right" onclick="removeScoreboard(this); return false;"><span class="glyphicon glyphicon-minus"></span></a></div><div class="panel-body">{{address}}</div></div>
+      <div id="{{_id}}" class="panel panel-info"><div class="panel-heading"><a href="/{{_id}}" title="scoreboard details">{{name}}</a><a class="pull-right" onclick="removeScoreboard(this); return false;" data-toggle="tooltip" data-placement="left" title="remove item"><span class="glyphicon glyphicon-minus"></span></a></div><div class="panel-body">{{address}}</div></div>
 
   
 
