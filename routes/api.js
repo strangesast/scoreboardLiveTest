@@ -59,7 +59,12 @@ function get(callback, data) {
 	} else if(what == "byid") {
 		var scoreboardId = data.id;
 		collection.find({'_id': mongodb.ObjectID(scoreboardId)}).toArray(function(err, returnObject) {
-			console.log(returnObject);
+			
+			// convert to date object
+			if('createdon' in returnObject[0]) {
+				returnObject[0].createdon = Date(returnObject[0].createdon);
+			}
+
 			callback(returnObject);
 		});
 
@@ -83,7 +88,8 @@ function add(callback, data) {
 	//   'address' : 'http://127.0.0.1:3000',
 	//   'hpc': 120,
 	//   'vpc' : 60,
-	//   'lps' : 120
+	//   'lps' : 120,
+	//   'createdon' : 
 	//   }
 	// }
 

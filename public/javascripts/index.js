@@ -31,6 +31,8 @@ function addScoreboard(data) {
 		alert("missing entry");
 	} else {
 		out.objects = [];
+		out.createdon = new Date();
+
 		var obj = {'method' : 'add',
 		           'what' : out};
 
