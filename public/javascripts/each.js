@@ -1,6 +1,8 @@
 var _id = document.getElementById('main').getAttribute("name");
 var source;
 var template;
+var details;
+var pixelSize = 6;
 
 
 $(document).ready(function() {
@@ -32,11 +34,17 @@ function buildPage(objectDetails) {
 		$('#main').html("<h1>" + _id + " does not exist.</h1><h4>Sorry</h4>");
 	} else {
 		$('#main').html(template(objectDetails[0]));
+		details = objectDetails[0];
 		beginCanvas();
 	}
 }
 
-
 function beginCanvas() {
-
+	var canvasElement = document.getElementById('canvas');
+	var width = pixelSize*details.hpc;
+	var height = pixelSize*details.vpc;
+	canvasElement.width = width;
+	canvasElement.height = height;
+	var ctx = canvasElement.getContext('2d');
+	ctx.fillRect(0, 0, width, height);
 }
