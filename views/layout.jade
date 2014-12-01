@@ -1,10 +1,18 @@
 doctype html
 html
   head
-    title= title
+    title Scoreboard Live
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel='stylesheet', href='/components/bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
+
   body
     block content
 
+  script(src="/components/jquery/dist/jquery.min.js")
+  script(src="/components/bootstrap/dist/js/bootstrap.min.js")
+  script(src="/components/handlebars/handlebars.min.js")
+
   block scripts
-    script(src="/components/jquery/")

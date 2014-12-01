@@ -1,8 +1,45 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .container 
+    h1 Live Scoreboards
+    #scoreboards
+
+    #add_scoreboard(role="tablist" aria-multiselectable="true").panel-group
+      .panel.panel-default
+        .panel-heading(role="tab")#add
+          a.btn.btn-default(data-toggle="collapse", data-parent="add_scoreboard", href="#collapse", aria-expanded="false", aria-controls="collapse")
+            span.glyphicon.glyphicon-plus
+        #collapse.panel-collapse.collapse(role='tabpanel', aria-labelledby="add")
+          .panel-body
+            .row
+              form(role="form")#newScoreboard
+                .form-group.col-md-4
+                  label(for="name") Board Name
+                  input(type="text", name="name", placeholder="Name").form-control#name
+        
+                .form-group.col-md-4
+                  label(for="address") Board Location
+                  input(type="text", name="address", placeholder="Network Location").form-control#address
+        
+                .form-group.col-md-4
+                  label(for="hpc") Column Count
+                  input(type="number", name="hpc", placeholder="120").form-control#hpc
+        
+                .form-group.col-md-4
+                  label(for="vpc") Row Count
+                  input(type="number", name="vpc", placeholder="8").form-control#vpc
+        
+                .form-group.col-md-4
+                  label(for="lps") LEDs per Strip
+                  input(type="number", name="lps", placeholder="240").form-control#lps
+            .row.add-row
+              button.btn.btn-primary(onclick="addScoreboard();return false;") Submit
+
+    script()#scoreboardTemplate.
+      <div id="{{_id}}" class="panel panel-info"><div class="panel-heading"><a href="/{{_id}}">{{name}}</a><a class="pull-right" onclick="removeScoreboard(this); return false;"><span class="glyphicon glyphicon-minus"></span></a></div><div class="panel-body">{{address}}</div></div>
+
+  
 
 block scripts
   script(src="/javascripts/index.js")

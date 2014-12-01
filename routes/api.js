@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var mongodb = require('mongodb').MongoClient;
+var mongodb = require('mongodb');
 var config = require('../config');
 var mongoUrl = config.mongoUrl;
 var maxWait = config.wait;
@@ -9,8 +9,7 @@ var Db;
 
 function connect(firstCallback, secondCallback, secondParameters) {
 	if (Db === undefined) {
-		var guardTimeout = setTimeout(function() {secondCallback('timeout');}, maxWait);
-		mongodb.connect(mongoUrl, function(err, db) {
+		mongodb.MongoClient.connect(mongoUrl, function(err, db) {
 			var string = 'mongo connection to ' + mongoUrl;
 			if(err) {console.log(string + ' unsuccessful');}
 			Db = db;
@@ -35,89 +34,90 @@ function count(callback, data) {
 
 
 function get(callback, data) {
+	// GET
+	// data = {
+	// 'method' : 'get',
+	// 'what' : 'all'
+	// }
+	//
+	// data = {
+	// 'method' : 'get',
+	// 'what' : 'byid',
+	// 'ids' : ['1243']
+	// }
+
+	var collection = Db.collection(config.scoreboardCollectionName);
 	var what = data.what;
-	var response = [];
+	
+	// return scoreboard ids
+	if(what == "all") {
+		collection.find({}).toArray(function(err, returnObject) {
+      callback(returnObject);
+		});
 
-	function buildResponse(i) {
-		return function(err, docs) {
-			if(err) {
-				response[i] = err;
-			} else {
-				response[i] = docs;
-			}
-			if(response.indexOf(undefined) == -1 && response.length == what.length) {
-				callback(response);
-			}
-		};
+  // return ids corresponding to list of ids
+	} else if(what == "byid") {
+		var scoreboardIds = data.ids;
+	  console.log(scoreboardIds)
+		collection.find({_id: {$in: scoreboardIds}}).toArray(function(err, returnObject) {
+			callback(returnObject);
+		});
+
+  // invalid
+	} else {
+		callback('invalid');
 	}
 
-  for(var i=0; i<what.length; i++) {
-		var each = what[i];
-		if(config.validTypes.indexOf(each.type) == -1) {
-			response[i] = null;
-		} else {
-		  Db.collection(each.type).find(each).toArray(buildResponse(i));
-		}
-	}
+}
+
+
+
+function add(callback, data) {
+	console.log('add');
+	
+	// ADD
+	// data = {
+	// 'method' : 'add',
+	// 'what' : {
+	//   'name' : 'test',
+	//   'address' : 'http://127.0.0.1:3000',
+	//   'hpc': 120,
+	//   'vpc' : 60,
+	//   'lps' : 120
+	//   }
+	// }
+
+  var collection = Db.collection(config.scoreboardCollectionName);
+	var what = data.what;
+
+	collection.insert(what, function(err, returnObject) {
+		console.log('log');
+		console.log(returnObject);
+		callback(returnObject);
+	});
+
 }
 
 
 function remove(callback, data) {
+	console.log(data);
+	// remove by id
 	var what = data.what;
 	var response = [];
 
-	function buildResponse(i) {
-		return function(err, docs) {
-			if(err) {
-				response[i] = err;
-			} else {
-				response[i] = docs;
-			}
-			if(response.indexOf(undefined) == -1 && response.length == what.length) {
-				callback(response);
-			}
-		};
-	}
+	var id = what;
 
-  for(var i=0; i<what.length; i++) {
-		var each = what[i];
-		if(config.validTypes.indexOf(each.type) == -1) {
-			response[i] = null;
-		} else {
-		  Db.collection(each.type).remove(each, buildResponse(i));
-		}
-	}
+  var collection = Db.collection(config.scoreboardCollectionName);
+	collection.remove({_id: new mongodb.ObjectID(id)}, function(err, returnObject) {
+		console.log('retu');
+		console.log(returnObject);
+		callback([err, returnObject]);
+	});
 }
 
 
-function add(callback, data) {
-	var what = data.what;
-	var response = [];
-
-	function buildResponse(i) {
-		return function(err, docs) {
-			if(err) {
-				response[i] = err;
-			} else {
-				response[i] = docs;
-			}
-			if(response.indexOf(undefined) == -1 && response.length == what.length) {
-				callback(response);
-			}
-		};
-	}
-
-	for(var i=0; i<what.length; i++) {
-		var each = what[i];
-		if(config.validTypes.indexOf(each.type) == -1) {
-			response[i] = null;
-		} else {
-		  Db.collection(each.type).insert(each, buildResponse(i));
-		}
-	}
-}
-
-var routing = {'count': count, 'get': get, 'remove': remove, 'add': add};
+//var routing = {'count': count, 'get': get, 'remove': remove, 'add': add};
+var routing = {'get' : get, 'add': add, 'remove': remove};
 
 router.post('/', handle);
 router.get('/', handle);

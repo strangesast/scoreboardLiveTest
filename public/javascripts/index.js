@@ -1,12 +1,51 @@
-var method = "getScoreboards";
+var scoreboardContainer = "scoreboards"
+var source;
+var template;
+
+
 
 $(document).ready(function() {
 	var obj = {};
-	ajaxy('/', obj, function(t) {
-		console.log(t);
-	});
+	obj.method = "get";
+	obj.what = "all";
+	
+	// get scoreboards
+	source = $('#scoreboardTemplate').html();
+  template = Handlebars.compile(source);
+
+	ajaxy('/api', JSON.stringify(obj), handleScoreboards)
 });
 
+
+function addScoreboard(data) {
+	var obj = $('#newScoreboard').serializeArray();
+	var out = new Object();
+	var values = [];
+	for(var i=0; i<obj.length; i++) {
+    out[obj[i].name] = obj[i].value;
+		values.push(obj[i].value);
+	}
+	var keys = Object.keys(out);
+
+	if($.inArray("", values) > -1) {
+		alert("missing entry");
+	} else {
+		out.objects = [];
+		var obj = {'method' : 'add',
+		           'what' : out};
+
+		ajaxy('/api', JSON.stringify(obj), function(returnObj) {
+			$('#newScoreboard')[0].reset();
+			var scoreboard = returnObj[0];
+		  if('name' in scoreboard) {
+		  	$('#scoreboards').append(template(scoreboard));
+		  } else {
+				alert('error');
+			}
+			$('#collapse').collapse('hide');
+		});
+	}
+}
 
 function ajaxy(url, obj, callback) {
   var promise = $.ajax({
@@ -18,5 +57,26 @@ function ajaxy(url, obj, callback) {
 
 	promise.done(function(data, err) {
 		callback(data);
+	});
+}
+
+function handleScoreboards(scoreboards) {
+
+	for(var i=0; i<scoreboards.length; i++) {
+		var scoreboard = scoreboards[i];
+		$('#scoreboards').append(template(scoreboard));
+	}
+}
+
+function removeScoreboard(domobj) {
+	var parent = $(domobj).parent().parent();
+	var obj = {};
+	obj.method = "remove";
+	obj.what = parent[0].id;
+	ajaxy('/api', JSON.stringify(obj), function(returnObj) {
+		console.log(returnObj);
+	  if(returnObj[0] == null && returnObj[1] == 1) {
+			parent.animate({'height': '0px'}, 100, function() {parent.remove()});
+		}
 	});
 }
