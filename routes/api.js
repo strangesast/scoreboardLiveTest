@@ -43,7 +43,7 @@ function get(callback, data) {
 	// data = {
 	// 'method' : 'get',
 	// 'what' : 'byid',
-	// 'ids' : ['1243']
+	// 'id' : '1243'
 	// }
 
 	var collection = Db.collection(config.scoreboardCollectionName);
@@ -57,9 +57,9 @@ function get(callback, data) {
 
   // return ids corresponding to list of ids
 	} else if(what == "byid") {
-		var scoreboardIds = data.ids;
-	  console.log(scoreboardIds)
-		collection.find({_id: {$in: scoreboardIds}}).toArray(function(err, returnObject) {
+		var scoreboardId = data.id;
+		collection.find({'_id': mongodb.ObjectID(scoreboardId)}).toArray(function(err, returnObject) {
+			console.log(returnObject);
 			callback(returnObject);
 		});
 
@@ -109,8 +109,6 @@ function remove(callback, data) {
 
   var collection = Db.collection(config.scoreboardCollectionName);
 	collection.remove({_id: new mongodb.ObjectID(id)}, function(err, returnObject) {
-		console.log('retu');
-		console.log(returnObject);
 		callback([err, returnObject]);
 	});
 }

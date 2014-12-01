@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  .container(name=_id)#main
+
+
+  script()#detailsTemplate.
+    <div id="{{_id}}"><h1>Details for {{name}}.</h1><h4>{{address}}</h4></div>
+
+block scripts
+  script(src='/javascripts/each.js')
