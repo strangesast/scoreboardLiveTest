@@ -128,8 +128,31 @@ function test(callback, data) {
 	);
 }
 
+var intervalObject;
+
+function update(callback, data) {
+	// also needs to update database, scoreboard "objects"
+	clearTimeout(intervalObject);
+	intervalObject = setTimeout(function() {sendShape(data);}, 10);
+	callback(data);
+}
+
+function sendShape(data) {
+  var obj = {'method': data.method, 'what': data.shape};
+	request.post({
+		url: data.address,
+		body: obj,
+		json: true
+	}, function(err, response, body) {
+		console.log(err);
+	});
+}
+
 //var routing = {'count': count, 'get': get, 'remove': remove, 'add': add};
-var routing = {'get' : get, 'add': add, 'remove': remove, 'test': test};
+
+var routing = {'get' : get, 'add': add, 'remove': remove, 'test': test, 'update': update};
+
+// update needs to be changed to actually add it to the database, with some delay prior
 
 router.post('/', handle);
 router.get('/', handle);
