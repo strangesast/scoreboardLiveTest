@@ -4,6 +4,7 @@ var mongodb = require('mongodb');
 var config = require('../config');
 var mongoUrl = config.mongoUrl;
 var maxWait = config.wait;
+var request = require('request');
 
 var Db;
 
@@ -19,17 +20,6 @@ function connect(firstCallback, secondCallback, secondParameters) {
 	} else {
 		firstCallback(secondCallback, secondParameters);
 	}
-}
-
-
-function count(callback, data) {
-	get(function(_data) {
-    var response =  [];
-		for(var i=0; i<_data.length; i++) {
-			response[i] = _data[i].length;
-		}
-		callback(response);
-	}, data);
 }
 
 
@@ -120,8 +110,26 @@ function remove(callback, data) {
 }
 
 
+var items = ['000000', '0000FF', 'FFFFFF'];
+var i = 1;
+function test(callback, data) {
+	if(i<2) {i+=1} else {i=0}
+	var address = data.what;
+	request.post({
+		url: address,
+	  form: { 'method': 'test', 'what':items[i]}},
+		function(err, response, body) {
+		  if(err) {
+		 	 callback({'status' : 'error', 'detail' : err});
+		  } else {
+		 	 callback({'status' : 'success', 'detail' : response.body});
+		  }
+		}
+	);
+}
+
 //var routing = {'count': count, 'get': get, 'remove': remove, 'add': add};
-var routing = {'get' : get, 'add': add, 'remove': remove};
+var routing = {'get' : get, 'add': add, 'remove': remove, 'test': test};
 
 router.post('/', handle);
 router.get('/', handle);

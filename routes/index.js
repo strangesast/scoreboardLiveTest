@@ -8,7 +8,6 @@ router.get('/', function(req, res) {
 
 router.get('/:id', function(req, res) {
 	var id = req.params.id;
-	console.log(id);
   res.render('each', {'_id': id});
 });
 

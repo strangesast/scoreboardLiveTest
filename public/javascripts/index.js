@@ -60,6 +60,10 @@ function ajaxy(url, obj, callback) {
 	promise.done(function(data, err) {
 		callback(data);
 	});
+
+	promise.fail(function(err) {
+		callback(err);
+	});
 }
 
 function handleScoreboards(scoreboards) {
@@ -81,4 +85,29 @@ function removeScoreboard(domobj) {
 			parent.animate({'height': '0px'}, 100, function() {parent.remove()});
 		}
 	});
+}
+
+
+function testConnection(btn) {
+	var address = $('input[name="address"]')[0].value;
+	if(address.substring(0, 7) != "http://") {
+		address = "http://" + address;
+	}
+
+	var obj = {'method': 'test'};
+	obj.what = address;
+	ajaxy('/api', JSON.stringify(obj), function(_obj) {displayAddressTest(_obj, btn);});
+}
+
+
+function displayAddressTest(result, button) {
+	if(result.status == "success") {
+	  $(button).addClass('btn-success');
+	} else if ('detail' in result) {
+	  $(button).addClass('btn-danger');
+		console.log(result.detail);
+	} else {
+	  $(button).addClass('btn-danger');
+		console.log('error');
+	}
 }

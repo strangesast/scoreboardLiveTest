@@ -20,7 +20,10 @@ block content
         
                 .form-group.col-md-4
                   label(for="address") Board Location
-                  input(type="text", name="address", placeholder="Network Location").form-control#address
+                  .input-group
+                    input(type="text", name="address", placeholder="http://127.0.0.1").form-control#address
+                    span.input-group-btn
+                      button.btn.btn-default(type="button", onclick="testConnection(this); return false;") Test
         
                 .form-group.col-md-4
                   label(for="hpc") Column Count
